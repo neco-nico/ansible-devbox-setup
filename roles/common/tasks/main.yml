@@ -12,6 +12,7 @@
     state: present
   environment:
     PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
+  when: ansible_os_family == "Darwin"
 
 - name: Create .bashrc if it doesn't exist
   ansible.builtin.file:
@@ -27,6 +28,7 @@
       export VOLTA_HOME="$HOME/.volta"
       export PATH="$VOLTA_HOME/bin:$PATH"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Volta"
+  when: ansible_os_family == "Darwin"
 
 - name: Initialize Volta and install Node.js
   ansible.builtin.shell: |
@@ -42,6 +44,7 @@
     creates: "{{ ansible_env.HOME }}/.volta/bin/node"
   environment:
     PATH: "/usr/local/opt/volta/bin:/opt/homebrew/bin:$PATH"
+  when: ansible_os_family == "Darwin"
 
 - name: Enable corepack and prepare Yarn
   ansible.builtin.shell: |
@@ -54,10 +57,4 @@
   environment:
     PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"
   changed_when: false
-
-- name: Install Claude Code globally
-  community.general.npm:
-    name: "@anthropic-ai/claude-code"
-    global: true
-  environment:
-    PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"
+  when: ansible_os_family == "Darwin"

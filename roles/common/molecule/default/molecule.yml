@@ -1,8 +1,9 @@
 ---
 dependency:
   name: galaxy
+  enabled: false
 driver:
-  name: delegated
+  name: default
   options:
     ansible_connection_options:
       ansible_connection: local
@@ -10,14 +11,23 @@ platforms:
   - name: localhost
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_CONFIG: "{{ molecule_scenario_directory }}/ansible.cfg"
   inventory:
     host_vars:
       localhost:
         ansible_connection: local
+        ansible_python_interpreter: /usr/bin/python3
   config_options:
     defaults:
-      callbacks_enabled: profile_tasks,timer,yaml
+      callbacks_enabled: profile_tasks,timer
+      roles_path: ../../..:~/.ansible/roles:/usr/share/ansible/roles
     ssh_connection:
       pipelining: false
+scenario:
+  test_sequence:
+    - converge
+    - idempotence
+    - verify
 verifier:
   name: ansible

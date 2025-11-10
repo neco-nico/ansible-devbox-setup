@@ -1,13 +1,18 @@
 ---
 - name: Test git role
-  hosts: all
+  hosts: localhost
+  connection: local
   gather_facts: true
   become: true
+  roles:
+    - git
   pre_tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
+        cache_valid_time: 3600
       when: ansible_os_family == "Debian"
+      changed_when: false
 
     - name: Install basic packages for testing
       ansible.builtin.package:
@@ -48,8 +53,3 @@
           alias gsa='git stash apply'
         dest: "{{ playbook_dir }}/dotfile/bash/.bashrc"
         mode: '0644'
-
-  tasks:
-    - name: Include git role
-      ansible.builtin.include_role:
-        name: git

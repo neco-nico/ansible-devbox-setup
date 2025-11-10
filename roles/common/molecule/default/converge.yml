@@ -1,13 +1,17 @@
 ---
 - name: Test common role
-  hosts: all
+  hosts: localhost
   gather_facts: true
   become: true
+  roles:
+    - common
   pre_tasks:
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
+        cache_valid_time: 3600
       when: ansible_os_family == "Debian"
+      changed_when: false
 
     - name: Install basic packages for testing
       ansible.builtin.package:
