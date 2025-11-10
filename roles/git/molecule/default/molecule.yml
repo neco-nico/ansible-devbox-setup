@@ -18,10 +18,9 @@ provisioner:
   config_options:
     defaults:
       callbacks_enabled: profile_tasks,timer
+      roles_path: ../../..:~/.ansible/roles:/usr/share/ansible/roles
     ssh_connection:
       pipelining: false
-  env:
-    ANSIBLE_ROLES_PATH: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/roles"
 scenario:
   test_sequence:
     - converge

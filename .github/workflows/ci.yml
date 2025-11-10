@@ -48,11 +48,13 @@ jobs:
           ansible-playbook --check --diff -i localhost, site.yml
 
       - name: Run Molecule tests for common role
-        run: |
-          cd roles/common
-          molecule test
+        working-directory: roles/common
+        env:
+          ANSIBLE_CONFIG: ${{ github.workspace }}/ansible.cfg
+        run: molecule test
 
       - name: Run Molecule tests for git role
-        run: |
-          cd roles/git
-          molecule test
+        working-directory: roles/common
+        env:
+          ANSIBLE_CONFIG: ${{ github.workspace }}/ansible.cfg
+        run: molecule test

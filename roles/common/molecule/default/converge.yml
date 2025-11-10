@@ -3,8 +3,6 @@
   hosts: localhost
   gather_facts: true
   become: true
-  vars:
-    ansible_roles_path: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/roles"
   roles:
     - common
   pre_tasks:
