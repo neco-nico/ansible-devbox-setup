@@ -3,44 +3,73 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Check if .bashrc exists
-      ansible.builtin.stat:
-        path: /home/testuser/.bashrc
-      register: bashrc_stat
+    # homebrew & tools
+    - name: Verify Homebrew tools are installed
+      ansible.builtin.command:
+        cmd: "which {{ item }}"
+      register: tool_check
+      loop:
+        - git
+        - tig
+        - wget
+        - gh
+        - fzf
+        - rg
+        - volta
+      changed_when: false
+      failed_when: false
 
-    - name: Verify .bashrc was created
+    - name: Assert all tools are installed
       ansible.builtin.assert:
         that:
-          - bashrc_stat.stat.exists
-        fail_msg: ".bashrc was not created"
-        success_msg: ".bashrc exists"
+          - item.item in ['git', 'tig', 'wget', 'gh', 'fzf', 'rg', 'volta']
+          - item.rc == 0
+        fail_msg: "Tool {{ item.item }} is not installed or not in PATH"
+        success_msg: "All Homebrew tools are installed"
+      loop: "{{ tool_check.results }}"
+      loop_control:
+        label: "{{ item.item }}"
 
-    - name: Check if Volta environment variables are in .bashrc
-      ansible.builtin.lineinfile:
-        path: /home/testuser/.bashrc
-        line: 'export VOLTA_HOME="$HOME/.volta"'
-        state: present
-      check_mode: true
-      register: volta_home_check
+    # .bashrc
+    - name: Verify .bashrc exists
+      ansible.builtin.command:
+        cmd: test -f /home/testuser/.bashrc
+      changed_when: false
 
-    - name: Verify Volta HOME is configured
-      ansible.builtin.assert:
-        that:
-          - not volta_home_check.changed
-        fail_msg: "Volta HOME environment variable not found in .bashrc"
-        success_msg: "Volta HOME environment variable configured"
+    # Volta environment variables
+    - name: Verify Volta environment variables are configured
+      ansible.builtin.command:
+        cmd: |
+          grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Volta" /home/testuser/.bashrc &&
+          grep -q "# END ANSIBLE MANAGED BLOCK - Volta" /home/testuser/.bashrc &&
+          grep -q 'export VOLTA_HOME="$HOME/.volta"' /home/testuser/.bashrc &&
+          grep -q 'export PATH="$VOLTA_HOME/bin:$PATH"' /home/testuser/.bashrc
+      changed_when: false
 
-    - name: Check if PATH is configured for Volta
-      ansible.builtin.lineinfile:
-        path: /home/testuser/.bashrc
-        line: 'export PATH="$VOLTA_HOME/bin:$PATH"'
-        state: present
-      check_mode: true
-      register: volta_path_check
+    # Node.js
+    - name: Verify Node.js is available
+      ansible.builtin.shell: |
+        export VOLTA_HOME="$HOME/.volta"
+        export PATH="$VOLTA_HOME/bin:$PATH"
+        node --version
+      changed_when: false
+      register: node_version_check
+      failed_when: node_version_check.rc != 0
 
-    - name: Verify Volta PATH is configured
-      ansible.builtin.assert:
-        that:
-          - not volta_path_check.changed
-        fail_msg: "Volta PATH not found in .bashrc"
-        success_msg: "Volta PATH configured"
+    - name: Display Node.js version
+      ansible.builtin.debug:
+        msg: "Node.js is available (version: {{ node_version_check.stdout }})"
+
+    # Yarn
+    - name: Verify Yarn is available
+      ansible.builtin.shell: |
+        export VOLTA_HOME="$HOME/.volta"
+        export PATH="$VOLTA_HOME/bin:$PATH"
+        yarn --version
+      changed_when: false
+      register: yarn_version_check
+      failed_when: yarn_version_check.rc != 0
+
+    - name: Display Yarn version
+      ansible.builtin.debug:
+        msg: "Yarn is available (version: {{ yarn_version_check.stdout }})"
