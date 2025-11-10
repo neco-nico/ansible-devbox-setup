@@ -1,4 +1,5 @@
 ---
 # Empty requirements file for Molecule tests
 # Dependencies are managed at the project root level
-
+roles: []
+collections: []
