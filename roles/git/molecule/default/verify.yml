@@ -33,6 +33,8 @@
       register: git_aliases_check
       changed_when: false
       failed_when: git_aliases_check.rc != 0
+      args:
+        executable: /bin/bash
 
     - name: Display git aliases
       ansible.builtin.debug:
