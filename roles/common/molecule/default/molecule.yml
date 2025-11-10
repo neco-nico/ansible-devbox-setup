@@ -22,7 +22,6 @@ provisioner:
       pipelining: false
 scenario:
   test_sequence:
-    - dependency
     - converge
     - idempotence
     - verify
