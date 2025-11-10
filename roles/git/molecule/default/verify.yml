@@ -27,14 +27,14 @@
 
     # git aliases
     - name: Verify git aliases are configured in dotfile
-      ansible.builtin.command:
-        cmd: |
-          grep -q "alias gb=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-          grep -q "alias gc=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-          grep -q "alias gp=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-          grep -q "alias gph=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-          grep -q "alias gs=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-          grep -q "alias gsa=" "{{ playbook_dir }}/dotfile/bash/.bashrc"
+      ansible.builtin.shell: |
+        grep -q "alias gb=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
+        grep -q "alias gc=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
+        grep -q "alias gp=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
+        grep -q "alias gph=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
+        grep -q "alias gs=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
+        grep -q "alias gsa=" "{{ playbook_dir }}/dotfile/bash/.bashrc"
+      register: git_aliases_check
       changed_when: false
       failed_when: git_aliases_check.rc != 0
       args:
@@ -42,4 +42,4 @@
 
     - name: Display git aliases
       ansible.builtin.debug:
-        msg: "Git aliases are configured: {{ git_aliases_check.stdout_lines }}"
+        msg: "Git aliases are configured successfully"
