@@ -1,8 +1,10 @@
 ---
 - name: Test common role
-  hosts: all
+  hosts: localhost
   gather_facts: true
   become: true
+  roles:
+    - common
   pre_tasks:
     - name: Update apt cache
       ansible.builtin.apt:
@@ -43,8 +45,3 @@
         name: npm
         state: present
       when: ansible_os_family == "Debian"
-
-  tasks:
-    - name: Include common role
-      ansible.builtin.include_role:
-        name: common
