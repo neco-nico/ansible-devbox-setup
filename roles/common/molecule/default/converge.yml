@@ -43,3 +43,8 @@
         name: npm
         state: present
       when: ansible_os_family == "Debian"
+
+  tasks:
+    - name: Include common role
+      ansible.builtin.include_role:
+        name: common
