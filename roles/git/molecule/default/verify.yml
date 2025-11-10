@@ -3,57 +3,37 @@
   hosts: all
   gather_facts: false
   tasks:
-    - name: Check if .bashrc exists
-      ansible.builtin.stat:
-        path: /home/testuser/.bashrc
-      register: bashrc_stat
+    # .bashrc
+    - name: Verify .bashrc exists
+      ansible.builtin.command:
+        cmd: test -f /home/testuser/.bashrc
+      changed_when: false
 
-    - name: Verify .bashrc was created
-      ansible.builtin.assert:
-        that:
-          - bashrc_stat.stat.exists
-        fail_msg: ".bashrc was not created"
-        success_msg: ".bashrc exists"
+    # bash config directory
+    - name: Verify bash config directory exists
+      ansible.builtin.command:
+        cmd: test -d /home/testuser/.config/bash
+      changed_when: false
 
-    - name: Check if bash config directory exists
-      ansible.builtin.stat:
-        path: /home/testuser/.config/bash
-      register: bash_config_stat
+    # Ansible managed block configuration
+    - name: Verify Ansible managed block is properly configured
+      ansible.builtin.command:
+        cmd: |
+          grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration" /home/testuser/.bashrc &&
+          grep -q "# END ANSIBLE MANAGED BLOCK - Devbox configuration" /home/testuser/.bashrc &&
+          grep -q 'source.*dotfile/bash/.bashrc' /home/testuser/.bashrc
+      changed_when: false
 
-    - name: Verify bash config directory was created
-      ansible.builtin.assert:
-        that:
-          - bash_config_stat.stat.exists
-          - bash_config_stat.stat.isdir
-        fail_msg: "bash config directory was not created"
-        success_msg: "bash config directory exists"
+    # git aliases
+    - name: Verify git aliases are configured
+      ansible.builtin.shell: |
+        set -o pipefail
+        source /home/testuser/.bashrc
+        alias | grep -E "^(gb|gc|gp|gph|gs|gsa|gr)="
+      register: git_aliases_check
+      changed_when: false
+      failed_when: git_aliases_check.rc != 0
 
-    - name: Check if devbox configuration is sourced in .bashrc
-      ansible.builtin.lineinfile:
-        path: /home/testuser/.bashrc
-        line: '[ -f "{{ playbook_dir }}/dotfile/bash/.bashrc" ] && source "{{ playbook_dir }}/dotfile/bash/.bashrc"'
-        state: present
-      check_mode: true
-      register: source_check
-
-    - name: Verify devbox configuration is sourced
-      ansible.builtin.assert:
-        that:
-          - not source_check.changed
-        fail_msg: "Devbox configuration sourcing not found in .bashrc"
-        success_msg: "Devbox configuration is properly sourced"
-
-    - name: Verify ansible managed block markers exist
-      ansible.builtin.lineinfile:
-        path: /home/testuser/.bashrc
-        line: "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration"
-        state: present
-      check_mode: true
-      register: begin_marker_check
-
-    - name: Verify begin marker exists
-      ansible.builtin.assert:
-        that:
-          - not begin_marker_check.changed
-        fail_msg: "Ansible managed block begin marker not found"
-        success_msg: "Ansible managed block properly configured"
+    - name: Display git aliases
+      ansible.builtin.debug:
+        msg: "Git aliases are configured: {{ git_aliases_check.stdout_lines }}"
