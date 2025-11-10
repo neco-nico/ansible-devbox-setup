@@ -27,6 +27,7 @@
     # git aliases
     - name: Verify git aliases are configured
       ansible.builtin.shell: |
+        set -o pipefail
         source /home/testuser/.bashrc
         alias | grep -E "^(gb|gc|gp|gph|gs|gsa|gr)="
       register: git_aliases_check
