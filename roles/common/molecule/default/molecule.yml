@@ -1,9 +1,7 @@
 ---
 dependency:
   name: galaxy
-  options:
-    requirements-file: requirements.yml
-    collections-file: collections.yml
+  enabled: false
 driver:
   name: default
   options:
