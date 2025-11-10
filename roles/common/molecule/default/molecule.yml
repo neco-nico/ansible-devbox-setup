@@ -11,6 +11,8 @@ platforms:
   - name: localhost
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_CONFIG: "{{ molecule_scenario_directory }}/ansible.cfg"
   inventory:
     host_vars:
       localhost:
