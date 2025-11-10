@@ -4,7 +4,7 @@
   gather_facts: true
   become: true
   roles:
-    - role: ../../
+    - common
   pre_tasks:
     - name: Update apt cache
       ansible.builtin.apt:
