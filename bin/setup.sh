@@ -27,12 +27,13 @@ echo "localhost ansible_connection=local" | sudo tee /etc/ansible/hosts > /dev/n
 # Install community.general collection for homebrew module
 ansible-galaxy collection install community.general
 
-# Get script directory
+# Get script directory and project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Run ansible playbook
 echo "Running Ansible playbook..."
-cd "${SCRIPT_DIR}"
+cd "${PROJECT_ROOT}"
 ansible-playbook site.yml
 
 echo "✅ Devbox setup completed!"
@@ -40,8 +41,8 @@ echo ""
 
 # Run setup verification
 echo "Running setup verification..."
-if [ -f "bin/verify-setup.sh" ]; then
-  bash bin/verify-setup.sh
+if [ -f "${SCRIPT_DIR}/verify-setup.sh" ]; then
+  bash "${SCRIPT_DIR}/verify-setup.sh"
 else
   echo "⚠️  verify-setup.sh not found, skipping verification"
 fi
