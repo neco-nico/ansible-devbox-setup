@@ -17,7 +17,8 @@ provisioner:
         ansible_connection: local
   config_options:
     defaults:
-      callbacks_enabled: profile_tasks,timer,yaml
+      callbacks_enabled: profile_tasks,timer
+      roles_path: ../../..
     ssh_connection:
       pipelining: false
 scenario:
