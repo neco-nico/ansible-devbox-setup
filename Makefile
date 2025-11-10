@@ -34,6 +34,8 @@ test: linting syntax check
 
 setup: test
 	@echo "Running setup after tests..."
+	@echo "Installing Ansible collections..."
+	@ansible-galaxy collection install -r requirements.yml || (echo "❌ Ansible collection install failed" && exit 1)
 	@ansible-playbook site.yml
 
 verify:
