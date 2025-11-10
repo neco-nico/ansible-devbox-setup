@@ -54,10 +54,3 @@
   environment:
     PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"
   changed_when: false
-
-- name: Install Claude Code globally
-  community.general.npm:
-    name: "@anthropic-ai/claude-code"
-    global: true
-  environment:
-    PATH: "$HOME/.volta/bin:/usr/local/opt/volta/bin:/opt/homebrew/bin:{{ ansible_env.PATH }}"
