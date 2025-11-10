@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  author: neco-nico
+  description: Common development tooling setup for devbox
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: macOS
+      versions: ["12", "13", "14"]
+dependencies: []
