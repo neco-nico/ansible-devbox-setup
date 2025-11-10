@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ansible ansible-lint yamllint
+          pip install ansible ansible-lint yamllint molecule molecule-plugins[docker]
 
       - name: Install ansible collections
         run: |
@@ -42,3 +42,13 @@ jobs:
       - name: Run ansible-playbook dry run
         run: |
           ansible-playbook --check --diff -i localhost, site.yml
+
+      - name: Run Molecule tests for common role
+        run: |
+          cd roles/common
+          molecule test
+
+      - name: Run Molecule tests for git role
+        run: |
+          cd roles/git
+          molecule test
