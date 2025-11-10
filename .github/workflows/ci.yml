@@ -41,7 +41,7 @@ jobs:
 
       - name: Run ansible-playbook syntax check
         run: |
-          ansible-playbook --syntax-check site.yml
+          ansible-playbook --syntax-check -i localhost, site.yml
 
       - name: Run ansible-playbook dry run
         run: |
