@@ -3,7 +3,7 @@ dependency:
   name: galaxy
   enabled: false
 driver:
-  name: default
+  name: delegated
   options:
     ansible_connection_options:
       ansible_connection: local
