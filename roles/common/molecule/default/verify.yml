@@ -3,6 +3,39 @@
   hosts: all
   gather_facts: true
   tasks:
+    # Prerequisites: Homebrew installation
+    - name: Verify Homebrew is installed
+      ansible.builtin.command:
+        cmd: command -v brew
+      changed_when: false
+      register: brew_check
+      failed_when: brew_check.rc != 0
+
+    # Prerequisites: Homebrew PATH configuration
+    - name: Verify Homebrew PATH is configured in .zprofile
+      ansible.builtin.shell: |
+        test -f {{ ansible_env.HOME }}/.zprofile &&
+        grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Homebrew" {{ ansible_env.HOME }}/.zprofile &&
+        grep -q "# END ANSIBLE MANAGED BLOCK - Homebrew" {{ ansible_env.HOME }}/.zprofile &&
+        grep -q "brew shellenv" {{ ansible_env.HOME }}/.zprofile
+      changed_when: false
+
+    # Prerequisites: Ansible installation
+    - name: Verify Ansible is installed
+      ansible.builtin.command:
+        cmd: command -v ansible
+      changed_when: false
+      register: ansible_check
+      failed_when: ansible_check.rc != 0
+      environment:
+        PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+
+    # Prerequisites: Ansible collections installation
+    - name: Verify Ansible collections are installed
+      ansible.builtin.command:
+        cmd: test -d {{ ansible_env.HOME }}/.ansible/collections/ansible_collections/community/general
+      changed_when: false
+
     # homebrew & tools (macOS only)
     - name: Verify Homebrew tools are installed
       ansible.builtin.command:
@@ -55,10 +88,6 @@
       register: node_version_check
       failed_when: node_version_check.rc != 0
 
-    - name: Display Node.js version
-      ansible.builtin.debug:
-        msg: "Node.js is available (version: {{ node_version_check.stdout }})"
-
     # Yarn
     - name: Verify Yarn is available
       ansible.builtin.shell: |
@@ -68,13 +97,3 @@
       changed_when: false
       register: yarn_version_check
       failed_when: false
-
-    - name: Display Yarn version
-      ansible.builtin.debug:
-        msg: "Yarn is available (version: {{ yarn_version_check.stdout }})"
-      when: yarn_version_check.rc == 0
-
-    - name: Warn if Yarn is not available
-      ansible.builtin.debug:
-        msg: "Yarn is not available (this may be expected if not installed via Volta)"
-      when: yarn_version_check.rc != 0

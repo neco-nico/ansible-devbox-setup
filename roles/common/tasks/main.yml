@@ -1,4 +1,57 @@
 ---
+# Prerequisites: Install Homebrew if not already installed
+- name: Install Homebrew if not already installed
+  ansible.builtin.raw: |
+    if ! command -v brew &> /dev/null; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+  changed_when: false
+  when: ansible_os_family == "Darwin"
+
+- name: Detect Homebrew installation path
+  ansible.builtin.set_fact:
+    common_brew_prefix: "{{ '/opt/homebrew' if (ansible_architecture == 'arm64') else '/usr/local' }}"
+  when: ansible_os_family == "Darwin"
+
+- name: Add Homebrew to PATH in .zprofile
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.zprofile"
+    block: |
+      eval "$({{ common_brew_prefix }}/bin/brew shellenv)"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Homebrew"
+    create: true
+    mode: '0644'
+  when: ansible_os_family == "Darwin"
+
+- name: Set Homebrew PATH for current session
+  ansible.builtin.set_fact:
+    common_brew_path: "{{ common_brew_prefix }}/bin:{{ ansible_env.PATH }}"
+  when: ansible_os_family == "Darwin"
+
+# Prerequisites: Install Ansible if not already installed
+- name: Install Ansible via Homebrew
+  community.general.homebrew:
+    name: ansible
+    state: present
+  environment:
+    PATH: "{{ common_brew_path | default(ansible_env.PATH) }}"
+  when: ansible_os_family == "Darwin"
+
+- name: Get project root directory
+  ansible.builtin.set_fact:
+    common_project_root: "{{ playbook_dir | default(ansible_env.PWD | default('/tmp')) }}"
+  when: ansible_os_family == "Darwin"
+
+- name: Install Ansible collections from requirements.yml
+  ansible.builtin.command:
+    cmd: ansible-galaxy collection install -r {{ common_project_root }}/requirements.yml
+  args:
+    creates: "{{ ansible_env.HOME }}/.ansible/collections/ansible_collections/community/general"
+  environment:
+    PATH: "{{ common_brew_path | default(ansible_env.PATH) }}"
+  when: ansible_os_family == "Darwin"
+
+# Main tasks: Install development tools via Homebrew
 - name: Install development tools via Homebrew
   community.general.homebrew:
     name:
@@ -11,7 +64,7 @@
       - volta
     state: present
   environment:
-    PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
+    PATH: "{{ common_brew_path | default('/opt/homebrew/bin:' + ansible_env.PATH) }}"
   when: ansible_os_family == "Darwin"
 
 - name: Create .zshrc if it doesn't exist
