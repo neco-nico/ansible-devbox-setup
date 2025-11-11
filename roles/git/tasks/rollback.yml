@@ -1,0 +1,15 @@
+---
+# Rollback tasks for git role
+# This file is called when setup fails to revert configuration changes
+
+- name: Rollback devbox-setup configuration from .zshrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Devbox configuration"
+    state: absent
+  when: ansible_os_family == "Darwin"
+  failed_when: false
+
+- name: Display rollback status
+  ansible.builtin.debug:
+    msg: "Git role rollback completed (configuration blocks removed)"

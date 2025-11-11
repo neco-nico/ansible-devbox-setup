@@ -97,3 +97,48 @@
       changed_when: false
       register: yarn_version_check
       failed_when: false
+
+    # Rollback behaviour
+    - name: Execute common rollback tasks
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: rollback
+
+    - name: Stat .zprofile after rollback
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.zprofile"
+      register: zprofile_after
+
+    - name: Assert Homebrew PATH block removed from .zprofile
+      ansible.builtin.shell: |
+        grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Homebrew" {{ ansible_env.HOME }}/.zprofile
+      register: homebrew_block_check
+      changed_when: false
+      failed_when: homebrew_block_check.rc == 0
+      when: zprofile_after.stat.exists
+
+    - name: Stat .zshrc after rollback
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.zshrc"
+      register: zshrc_after
+
+    - name: Assert Volta block removed from .zshrc
+      ansible.builtin.shell: |
+        grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Volta" {{ ansible_env.HOME }}/.zshrc
+      register: zshrc_block_check
+      changed_when: false
+      failed_when: zshrc_block_check.rc == 0
+      when: zshrc_after.stat.exists
+
+    - name: Assert Volta directory removed
+      ansible.builtin.command:
+        cmd: test ! -d {{ ansible_env.HOME }}/.volta
+      changed_when: false
+      failed_when: false
+
+    - name: Verify volta command removed from PATH
+      ansible.builtin.command:
+        cmd: command -v volta
+      register: volta_command_check
+      changed_when: false
+      failed_when: volta_command_check.rc == 0

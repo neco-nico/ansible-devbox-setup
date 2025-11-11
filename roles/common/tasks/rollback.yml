@@ -1,0 +1,107 @@
+---
+# Rollback tasks for common role
+# This file is called when setup fails to revert configuration changes
+
+- name: Uninstall Homebrew packages installed by common role
+  community.general.homebrew:
+    name:
+      - git
+      - tig
+      - wget
+      - gh
+      - fzf
+      - ripgrep
+      - volta
+    state: absent
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+  when: ansible_os_family == "Darwin"
+
+- name: Check Volta Node.js installation
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.volta/tools/image/node"
+  register: common_volta_node
+  when: ansible_os_family == "Darwin"
+
+- name: Uninstall Node.js managed by Volta
+  ansible.builtin.shell: |
+    if command -v volta >/dev/null 2>&1; then
+      volta uninstall node
+    fi
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.volta/bin:/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+  when:
+    - ansible_os_family == "Darwin"
+    - common_volta_node.stat.exists
+  changed_when: false
+  register: common_volta_uninstall_node
+  failed_when: common_volta_uninstall_node.rc != 0
+
+- name: Check Volta Yarn installation
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.volta/tools/image/yarn"
+  register: common_volta_yarn
+  when: ansible_os_family == "Darwin"
+
+- name: Uninstall Yarn managed by Volta
+  ansible.builtin.shell: |
+    if command -v volta >/dev/null 2>&1; then
+      volta uninstall yarn
+    fi
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.volta/bin:/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+  when:
+    - ansible_os_family == "Darwin"
+    - common_volta_yarn.stat.exists
+  changed_when: false
+  register: common_volta_uninstall_yarn
+  failed_when: common_volta_uninstall_yarn.rc != 0
+
+- name: Remove Volta directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.volta"
+    state: absent
+  when: ansible_os_family == "Darwin"
+
+# blockinfileのstate: absentでマーカーで囲まれたブロックを削除
+- name: Check .zprofile existence
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.zprofile"
+  register: common_zprofile
+  when: ansible_os_family == "Darwin"
+
+- name: Rollback Homebrew PATH configuration from .zprofile
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.zprofile"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Homebrew"
+    state: absent
+  when:
+    - ansible_os_family == "Darwin"
+    - common_zprofile.stat.exists
+
+- name: Check .zshrc existence
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+  register: common_zshrc
+  when: ansible_os_family == "Darwin"
+
+- name: Rollback Volta environment variables from .zshrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Volta"
+    state: absent
+  when:
+    - ansible_os_family == "Darwin"
+    - common_zshrc.stat.exists
+
+- name: Remove .zshrc created by setup
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: absent
+  when:
+    - ansible_os_family == "Darwin"
+    - common_zshrc_created | default(false)
+
+- name: Display rollback status
+  ansible.builtin.debug:
+    msg: "Common role rollback completed (packages and configuration removed)"

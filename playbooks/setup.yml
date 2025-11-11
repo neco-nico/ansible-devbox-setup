@@ -1,0 +1,83 @@
+---
+- name: Setup devbox environment
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+  tasks:
+    - name: Initialize rollback tracking
+      # ロール処理の進捗管理するフラグの初期化
+      ansible.builtin.set_fact:
+        common_role_started: false
+        git_role_started: false
+        common_role_completed: false
+        git_role_completed: false
+
+    - name: Setup devbox with error handling
+      block:
+        - name: Mark common role as started
+          ansible.builtin.set_fact:
+            common_role_started: true
+
+        - name: Apply common role
+          ansible.builtin.include_role:
+            name: common
+
+        - name: Mark common role as completed
+          ansible.builtin.set_fact:
+            common_role_completed: true
+
+        - name: Mark git role as started
+          ansible.builtin.set_fact:
+            git_role_started: true
+
+        - name: Apply git role
+          ansible.builtin.include_role:
+            name: git
+
+        - name: Mark git role as completed
+          ansible.builtin.set_fact:
+            git_role_completed: true
+
+        - name: Display success message
+          ansible.builtin.debug:
+            msg: "✅ Devbox setup completed successfully!"
+
+      rescue:
+        - name: Display error message
+          ansible.builtin.debug:
+            msg: "❌ Setup failed. Attempting to rollback changes..."
+
+        - name: Rollback common role changes
+          when: common_role_started | default(false)
+          block:
+            - name: Include common rollback tasks
+              ansible.builtin.include_role:
+                name: common
+                tasks_from: rollback
+          rescue:
+            - name: Rollback failed but continuing (common)
+              ansible.builtin.debug:
+                msg: "Warning: Common role rollback encountered an error, but continuing..."
+
+        - name: Rollback git role changes
+          when: git_role_started | default(false)
+          block:
+            - name: Include git rollback tasks
+              ansible.builtin.include_role:
+                name: git
+                tasks_from: rollback
+          rescue:
+            - name: Rollback failed but continuing (git)
+              ansible.builtin.debug:
+                msg: "Warning: Git role rollback encountered an error, but continuing..."
+
+      always:
+        - name: Compute setup status
+          ansible.builtin.set_fact:
+            setup_success: "{{ (common_role_completed | default(false)) and (git_role_completed | default(false)) }}"
+        - name: Display setup status
+          ansible.builtin.debug:
+            msg: "Setup process completed (status: {{ setup_success | ternary('SUCCESS', 'FAILED') }})"
