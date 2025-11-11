@@ -1,4 +1,4 @@
-.PHONY: help test linting syntax check verify setup uninstall
+.PHONY: help test linting syntax check setup
 
 .DEFAULT_GOAL := help
 
@@ -9,8 +9,6 @@ help:
 	@echo "  make syntax    - Playbook構文チェック"
 	@echo "  make check     - Dry run（変更内容の事前確認）"
 	@echo "  make setup     - テスト後にセットアップ実行"
-	@echo "  make verify    - セットアップ結果の確認"
-	@echo "  make uninstall - アンインストール実行"
 
 linting:
 	@echo "Running yamllint..."
