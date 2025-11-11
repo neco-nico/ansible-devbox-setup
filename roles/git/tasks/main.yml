@@ -1,16 +1,19 @@
 ---
-- name: Create bash config directory
+- name: Create .zshrc if it doesn't exist
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.config/bash"
-    state: directory
-    mode: '0755'
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    state: touch
+    mode: '0644'
+  changed_when: false
+  when: ansible_os_family == "Darwin"
 
-- name: Source dotfile/.bashrc from main .bashrc
+- name: Source dotfile/.zshrc from main .zshrc
   ansible.builtin.blockinfile:
-    path: "{{ ansible_env.HOME }}/.bashrc"
+    path: "{{ ansible_env.HOME }}/.zshrc"
     block: |
       # Source custom configuration from devbox-setup
-      [ -f "{{ playbook_dir }}/dotfile/bash/.bashrc" ] && source "{{ playbook_dir }}/dotfile/bash/.bashrc"
+      [ -f "{{ playbook_dir }}/dotfile/zsh/.zshrc" ] && source "{{ playbook_dir }}/dotfile/zsh/.zshrc"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Devbox configuration"
     create: true
     mode: '0644'
+  when: ansible_os_family == "Darwin"

@@ -1,39 +1,34 @@
 ---
 - name: Verify git role
   hosts: all
-  gather_facts: false
-  become: true
+  gather_facts: true
+  become: false
   tasks:
-    # .bashrc
-    - name: Verify .bashrc exists
+    # .zshrc
+    - name: Verify .zshrc exists
       ansible.builtin.command:
-        cmd: test -f /home/testuser/.bashrc
-      changed_when: false
-
-    # bash config directory
-    - name: Verify bash config directory exists
-      ansible.builtin.command:
-        cmd: test -d /home/testuser/.config/bash
+        cmd: test -f {{ ansible_env.HOME }}/.zshrc
       changed_when: false
 
     # Ansible managed block configuration
-    - name: Verify Ansible managed block is properly configured
-      ansible.builtin.command:
-        cmd: |
-          grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration" /home/testuser/.bashrc &&
-          grep -q "# END ANSIBLE MANAGED BLOCK - Devbox configuration" /home/testuser/.bashrc &&
-          grep -q 'source.*dotfile/bash/.bashrc' /home/testuser/.bashrc
+    - name: Verify Ansible managed block is properly configured in .zshrc
+      ansible.builtin.shell: |
+        grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration" {{ ansible_env.HOME }}/.zshrc &&
+        grep -q "# END ANSIBLE MANAGED BLOCK - Devbox configuration" {{ ansible_env.HOME }}/.zshrc &&
+        grep -q 'source.*dotfile/zsh/.zshrc' {{ ansible_env.HOME }}/.zshrc
       changed_when: false
 
     # git aliases
     - name: Verify git aliases are configured in dotfile
       ansible.builtin.shell: |
-        grep -q "alias gb=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-        grep -q "alias gc=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-        grep -q "alias gp=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-        grep -q "alias gph=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-        grep -q "alias gs=" "{{ playbook_dir }}/dotfile/bash/.bashrc" &&
-        grep -q "alias gsa=" "{{ playbook_dir }}/dotfile/bash/.bashrc"
+        grep -q "alias gb=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
+        grep -q "alias gc=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
+        grep -q "alias gl=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
+        grep -q "alias gp=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
+        grep -q "alias gph=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
+        grep -q "alias gs=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
+        grep -q "alias gsa=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
+        grep -q "alias gr=" "{{ playbook_dir }}/dotfile/zsh/.zshrc"
       register: git_aliases_check
       changed_when: false
       failed_when: git_aliases_check.rc != 0
