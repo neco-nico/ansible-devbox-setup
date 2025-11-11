@@ -14,16 +14,17 @@
     PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
   when: ansible_os_family == "Darwin"
 
-- name: Create .bashrc if it doesn't exist
+- name: Create .zshrc if it doesn't exist
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.bashrc"
+    path: "{{ ansible_env.HOME }}/.zshrc"
     state: touch
     mode: '0644'
   changed_when: false
+  when: ansible_os_family == "Darwin"
 
-- name: Add Volta environment variables to .bashrc
+- name: Add Volta environment variables to .zshrc
   ansible.builtin.blockinfile:
-    path: "{{ ansible_env.HOME }}/.bashrc"
+    path: "{{ ansible_env.HOME }}/.zshrc"
     block: |
       export VOLTA_HOME="$HOME/.volta"
       export PATH="$VOLTA_HOME/bin:$PATH"

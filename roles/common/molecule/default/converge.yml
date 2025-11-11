@@ -2,46 +2,12 @@
 - name: Test common role
   hosts: localhost
   gather_facts: true
-  become: true
+  become: false
   roles:
     - common
   pre_tasks:
-    - name: Update apt cache
-      ansible.builtin.apt:
-        update_cache: true
-        cache_valid_time: 3600
-      when: ansible_os_family == "Debian"
-      changed_when: false
-
-    - name: Install basic packages for testing
-      ansible.builtin.package:
-        name:
-          - curl
-          - sudo
-        state: present
-
-    - name: Create test user
-      ansible.builtin.user:
-        name: testuser
-        shell: /bin/bash
-        create_home: true
-        home: /home/testuser
-      register: test_user
-
     - name: Set HOME environment variable for test user
       ansible.builtin.set_fact:
         ansible_env:
-          HOME: "/home/testuser"
+          HOME: "{{ ansible_env.HOME }}"
           PATH: "/usr/local/bin:/usr/bin:/bin"
-
-    - name: Install Node.js (as volta alternative for testing)
-      ansible.builtin.package:
-        name: nodejs
-        state: present
-      when: ansible_os_family == "Debian"
-
-    - name: Install npm
-      ansible.builtin.package:
-        name: npm
-        state: present
-      when: ansible_os_family == "Debian"
