@@ -19,12 +19,12 @@ linting:
 
 syntax:
 	@echo "Checking Ansible playbook syntax..."
-	@ansible-playbook site.yml --syntax-check || (echo "❌ Syntax check failed" && exit 1)
+	@ansible-playbook playbooks/setup.yml --syntax-check || (echo "❌ Syntax check failed" && exit 1)
 	@echo "✅ Syntax check passed!"
 
 check:
 	@echo "Running dry run check..."
-	@ansible-playbook site.yml --check || (echo "❌ Dry run failed" && exit 1)
+	@ansible-playbook playbooks/setup.yml --check || (echo "❌ Dry run failed" && exit 1)
 	@echo "✅ Dry run completed!"
 
 test: linting syntax check
@@ -34,4 +34,4 @@ setup: test
 	@echo "Running setup after tests..."
 	@echo "Installing Ansible collections..."
 	@ansible-galaxy collection install -r requirements.yml || (echo "❌ Ansible collection install failed" && exit 1)
-	@ansible-playbook site.yml
+	@ansible-playbook playbooks/setup.yml

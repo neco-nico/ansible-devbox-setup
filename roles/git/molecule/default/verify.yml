@@ -32,9 +32,20 @@
       register: git_aliases_check
       changed_when: false
       failed_when: git_aliases_check.rc != 0
-      args:
-        executable: /bin/bash
 
     - name: Display git aliases
       ansible.builtin.debug:
         msg: "Git aliases are configured successfully"
+
+    # Rollback behaviour
+    - name: Execute git rollback tasks
+      ansible.builtin.include_role:
+        name: git
+        tasks_from: rollback
+
+    - name: Assert Devbox block removed from .zshrc
+      ansible.builtin.shell: |
+        grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration" {{ ansible_env.HOME }}/.zshrc
+      register: devbox_block_check
+      changed_when: false
+      failed_when: devbox_block_check.rc == 0
