@@ -38,18 +38,20 @@
 
     - name: Create dotfile directory structure for testing
       ansible.builtin.file:
-        path: "{{ playbook_dir }}/dotfile/bash"
+        path: "{{ playbook_dir }}/dotfile/zsh"
         state: directory
         recurse: true
 
-    - name: Create test .bashrc in dotfile directory
+    - name: Create test .zshrc in dotfile directory
       ansible.builtin.copy:
         content: |
           alias gb='git branch'
           alias gc='git checkout'
+          alias gl='git log'
           alias gp='git pull'
           alias gph='git push'
           alias gs='git stash'
           alias gsa='git stash apply'
-        dest: "{{ playbook_dir }}/dotfile/bash/.bashrc"
+          alias gr='git rebase'
+        dest: "{{ playbook_dir }}/dotfile/zsh/.zshrc"
         mode: '0644'
