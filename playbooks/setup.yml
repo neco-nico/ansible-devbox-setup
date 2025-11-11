@@ -8,7 +8,6 @@
 
   tasks:
     - name: Initialize rollback tracking
-      # ロール処理の進捗管理するフラグの初期化
       ansible.builtin.set_fact:
         common_role_started: false
         git_role_started: false
