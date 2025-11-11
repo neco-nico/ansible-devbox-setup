@@ -1,22 +1,21 @@
 ---
 - name: Verify git role
   hosts: all
-  gather_facts: false
-  become: true
+  gather_facts: true
+  become: false
   tasks:
     # .zshrc
     - name: Verify .zshrc exists
       ansible.builtin.command:
-        cmd: test -f /home/testuser/.zshrc
+        cmd: test -f {{ ansible_env.HOME }}/.zshrc
       changed_when: false
 
     # Ansible managed block configuration
     - name: Verify Ansible managed block is properly configured in .zshrc
-      ansible.builtin.command:
-        cmd: |
-          grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration" /home/testuser/.zshrc &&
-          grep -q "# END ANSIBLE MANAGED BLOCK - Devbox configuration" /home/testuser/.zshrc &&
-          grep -q 'source.*dotfile/zsh/.zshrc' /home/testuser/.zshrc
+      ansible.builtin.shell: |
+        grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration" {{ ansible_env.HOME }}/.zshrc &&
+        grep -q "# END ANSIBLE MANAGED BLOCK - Devbox configuration" {{ ansible_env.HOME }}/.zshrc &&
+        grep -q 'source.*dotfile/zsh/.zshrc' {{ ansible_env.HOME }}/.zshrc
       changed_when: false
 
     # git aliases
