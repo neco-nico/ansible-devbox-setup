@@ -1,0 +1,43 @@
+name: Record Initial Setup Demo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  demo:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install asciinema || true
+          python3 -m pip install --user ansible
+          python3 -m pip install --user agg
+          echo "PATH=$HOME/Library/Python/3.11/bin:$HOME/Library/Python/3.10/bin:$PATH" >> $GITHUB_ENV
+
+      - name: Install Ansible collections
+        run: |
+          ansible-galaxy collection install -r requirements.yml
+
+      - name: Record initial setup
+        run: |
+          asciinema rec -y -c "ansible-playbook playbooks/setup.yml" setup-demo.cast
+
+      - name: Prepare output directory
+        run: |
+          mkdir -p docs/images
+
+      - name: Convert to GIF
+        run: |
+          export PATH="$HOME/Library/Python/3.11/bin:$HOME/Library/Python/3.10/bin:$PATH"
+          agg setup-demo.cast docs/images/setup-demo.gif
+
+      - name: Upload GIF
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-demo-gif
+          path: docs/images/setup-demo.gif
+
