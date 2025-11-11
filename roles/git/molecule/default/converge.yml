@@ -36,6 +36,10 @@
           HOME: "/home/testuser"
           PATH: "/usr/local/bin:/usr/bin:/bin"
 
+    - name: Set test mode variable
+      ansible.builtin.set_fact:
+        molecule_test: true
+
     - name: Create dotfile directory structure for testing
       ansible.builtin.file:
         path: "{{ playbook_dir }}/dotfile/zsh"
