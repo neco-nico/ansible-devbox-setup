@@ -40,4 +40,3 @@ jobs:
         with:
           name: setup-demo-gif
           path: docs/images/setup-demo.gif
-

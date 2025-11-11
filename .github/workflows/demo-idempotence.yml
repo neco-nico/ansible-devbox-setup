@@ -44,4 +44,3 @@ jobs:
         with:
           name: idempotence-demo-gif
           path: docs/images/idempotence-demo.gif
-
