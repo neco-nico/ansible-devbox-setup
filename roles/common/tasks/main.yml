@@ -29,6 +29,8 @@
       export VOLTA_HOME="$HOME/.volta"
       export PATH="$VOLTA_HOME/bin:$PATH"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Volta"
+    create: true
+    mode: '0644'
   when: ansible_os_family == "Darwin"
 
 - name: Initialize Volta and install Node.js
