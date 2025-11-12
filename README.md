@@ -85,7 +85,7 @@ ansible-devbox-setup/
 ## 🔒 セキュリティ
 
 ### 安全なインストール手順
-- **curl|bash回避**: セキュリティのため `curl | bash` パターンは使用しません
+- **curl|bash回避**: セキュリティのため `curl|bash` パターンは使用しません
 - **パッケージマネージャー優先**: Homebrew等の署名済みパッケージを使用
 - **チェックサム検証**: 外部バイナリはパッケージマネージャー経由で検証済み
 - **非root実行**: 可能な限りユーザー権限で実行
@@ -108,7 +108,7 @@ ansible-playbook playbooks/setup.yml --ask-vault-pass
 ### 実行前検証
 ```bash
 # 実行前に変更内容を確認
-make check    # Dry run で予定変更を表示
+make check # Dry run で予定変更を表示
 
 # セットアップ後の検証（Moleculeテスト）
 cd roles/common && molecule test
@@ -123,8 +123,8 @@ cd roles/git && molecule test
 $ ansible-playbook playbooks/setup.yml
 
 PLAY RECAP ******************************************************************************************************
-localhost                  : ok=25   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+localhost : ok=25   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
 ## 学習で利用した書籍
-- [Ansible実践ガイド 第4版［基礎編］](https://www.amazon.co.jp/Ansible%E5%AE%9F%E8%B7%B5%E3%82%AC%E3%82%A4%E3%83%89-%E7%AC%AC4%E7%89%88%EF%BC%BB%E5%9F%BA%E7%A4%8E%E7%B7%A8%EF%BC%BD-impress-top-gear/dp/4295016810/ref=sr_1_2_sspa?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&crid=QD67ZRBRZYOT&dib=eyJ2IjoiMSJ9.4REd3aaynFadfkN5wQRQH5n9wkvCubTbJr93YYVac63iBPWNFJAeCj12UiosDPqv2NW8ARMUayqlJi1ZBKlmjhT1yZ3v7eBqoUVqlUS3LkLVf2PInuCyxLmHHHVc4gkABUadyNqE7nmMDD5U4H0nIn76vEw-cqbOJupzbKpWG9WCiUpxFUbixx_54vLKqeI0i1b3oATfktBy9AuyqTzQ4JwPK1GxZcl7HiYtGm8xy5WNHKmgagaYD_8cgpWY_tlQaB6vWHfiQpn7FEb17Qn7pCE6VH6LHMzcueMIyULZHbc.zgJukY8ipO8aPRm8nfGNZKqvG4Ur1UNcmCYwU1XxYj0&dib_tag=se&keywords=ansible%E5%AE%9F%E8%B7%B5&qid=1762401482&sprefix=ansible%E5%AE%9F%E8%B7%B5%2Caps%2C169&sr=8-2-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&psc=1)
+- [Ansible実践ガイド 第4版［基礎編］](https://book.impress.co.jp/books/1122101189)
