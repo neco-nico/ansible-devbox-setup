@@ -11,7 +11,7 @@
   ansible.builtin.blockinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     block: |
-      # Source custom configuration from devbox-setup
+      # Source custom configuration from ansible-devbox-setup
       [ -f "{{ playbook_dir }}/dotfile/zsh/.zshrc" ] && source "{{ playbook_dir }}/dotfile/zsh/.zshrc"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Devbox configuration"
     create: true

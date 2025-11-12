@@ -11,6 +11,8 @@ help:
 	@echo "  make setup     - テスト後にセットアップ実行"
 
 linting:
+	@echo "Installing Ansible collections..."
+	@ansible-galaxy collection install -r requirements.yml || (echo "❌ Ansible collection install failed" && exit 1)
 	@echo "Running yamllint..."
 	@yamllint . || (echo "❌ yamllint failed" && exit 1)
 	@echo "Running ansible-lint..."
