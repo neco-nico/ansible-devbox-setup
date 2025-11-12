@@ -1,7 +1,7 @@
 # Devbox Setup
 
-[![CI](https://github.com/neco-nico/ansible-devbox-setup/workflows/CI/badge.svg)](https://github.com/neco-nico/ansible-devbox-setup/actions)
-[![Molecule Tests](https://github.com/neco-nico/ansible-devbox-setup/workflows/CI/badge.svg?label=Molecule%20Tests)](https://github.com/neco-nico/ansible-devbox-setup/actions)
+[![CI](https://github.com/neco-nico/ansible-devbox-setup/actions/workflows/ci.yml/badge.svg)](https://github.com/neco-nico/ansible-devbox-setup/actions)
+[![Molecule Tests](https://github.com/neco-nico/ansible-devbox-setup/actions/workflows/ci.yml/badge.svg?label=Molecule%20Tests)](https://github.com/neco-nico/ansible-devbox-setup/actions)
 
 🚀 **macOS開発環境を一括でセットアップするAnsibleプレイブック**
 
