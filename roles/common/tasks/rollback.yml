@@ -102,6 +102,13 @@
     - ansible_os_family == "Darwin"
     - common_zshrc_created | default(false)
 
+- name: Remove Ansible collections installed by setup
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.ansible/collections/ansible_collections/community/general"
+    state: absent
+  when: ansible_os_family == "Darwin"
+  failed_when: false
+
 - name: Display rollback status
   ansible.builtin.debug:
     msg: "Common role rollback completed (packages and configuration removed)"
