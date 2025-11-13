@@ -75,9 +75,7 @@ ansible-devbox-setup/
 ├── roles/                 # Ansibleロール
 │   ├── common/            # 共通設定（Homebrew、Ansible、開発ツール）
 │   └── git/               # Git関連設定
-│       ├── files/         # Gitエイリアス用の設定ファイル
-│       │   └── .zshrc     # ~/.zshrc.git-config としてコピーされるテンプレート
-│       └── tasks/         # Git設定タスク
+│       └── files/         # Gitエイリアス用の設定ファイル
 └── docs/                  # デモ画像などのメディア
 ```
 
