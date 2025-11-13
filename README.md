@@ -13,6 +13,9 @@ cd ansible-devbox-setup
 # テスト実行後にセットアップ
 make setup
 
+# 変更を反映
+source ~/.zshrc
+
 # または直接実行（Python 3が必要）
 ansible-galaxy collection install -r requirements.yml
 ansible-playbook playbooks/setup.yml
@@ -72,8 +75,16 @@ ansible-devbox-setup/
 ├── roles/                 # Ansibleロール
 │   ├── common/            # 共通設定（Homebrew、Ansible、開発ツール）
 │   └── git/               # Git関連設定
-└── docs/                  # 詳細ドキュメント
+│       └── files/         # Gitエイリアス用の設定ファイル
+└── docs/                  # デモ画像などのメディア
 ```
+
+## Gitエイリアスの管理
+
+- Gitロールは `roles/git/files/.zshrc` を `~/.zshrc.git-config` にコピーし、`~/.zshrc` から自動的に読み込みます
+- Gitエイリアスを変更したい場合は、リポジトリ内の `roles/git/files/.zshrc` を編集し、再度プレイブックを実行してください（再実行時に常に上書きされます）
+- 手元で一時的に変更したい場合は、セットアップ後に `~/.zshrc.git-config` を直接編集しても構いませんが、再度プレイブックを実行するとリポジトリの内容で上書きされる点に注意してください
+- セットアップ直後のシェルでエイリアスを使うには `source ~/.zshrc` を実行するか、新しいターミナル（zsh）を開き直してください
 
 ## 対象環境
 

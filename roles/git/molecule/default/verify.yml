@@ -15,20 +15,20 @@
       ansible.builtin.shell: |
         grep -q "# BEGIN ANSIBLE MANAGED BLOCK - Devbox configuration" {{ ansible_env.HOME }}/.zshrc &&
         grep -q "# END ANSIBLE MANAGED BLOCK - Devbox configuration" {{ ansible_env.HOME }}/.zshrc &&
-        grep -q 'source.*dotfile/zsh/.zshrc' {{ ansible_env.HOME }}/.zshrc
+        grep -q 'source.*\.zshrc\.git-config' {{ ansible_env.HOME }}/.zshrc
       changed_when: false
 
     # git aliases
-    - name: Verify git aliases are configured in dotfile
+    - name: Verify git aliases are configured in git role config file
       ansible.builtin.shell: |
-        grep -q "alias gb=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
-        grep -q "alias gc=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
-        grep -q "alias gl=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
-        grep -q "alias gp=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
-        grep -q "alias gph=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
-        grep -q "alias gs=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
-        grep -q "alias gsa=" "{{ playbook_dir }}/dotfile/zsh/.zshrc" &&
-        grep -q "alias gr=" "{{ playbook_dir }}/dotfile/zsh/.zshrc"
+        grep -q "alias gb=" "{{ ansible_env.HOME }}/.zshrc.git-config" &&
+        grep -q "alias gc=" "{{ ansible_env.HOME }}/.zshrc.git-config" &&
+        grep -q "alias gl=" "{{ ansible_env.HOME }}/.zshrc.git-config" &&
+        grep -q "alias gp=" "{{ ansible_env.HOME }}/.zshrc.git-config" &&
+        grep -q "alias gph=" "{{ ansible_env.HOME }}/.zshrc.git-config" &&
+        grep -q "alias gs=" "{{ ansible_env.HOME }}/.zshrc.git-config" &&
+        grep -q "alias gsa=" "{{ ansible_env.HOME }}/.zshrc.git-config" &&
+        grep -q "alias gr=" "{{ ansible_env.HOME }}/.zshrc.git-config"
       register: git_aliases_check
       changed_when: false
       failed_when: git_aliases_check.rc != 0

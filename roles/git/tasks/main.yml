@@ -7,12 +7,19 @@
   changed_when: false
   when: ansible_os_family == "Darwin"
 
-- name: Source dotfile/.zshrc from main .zshrc
+- name: Copy .zshrc configuration file to home directory
+  ansible.builtin.copy:
+    src: .zshrc
+    dest: "{{ ansible_env.HOME }}/.zshrc.git-config"
+    mode: '0644'
+  when: ansible_os_family == "Darwin"
+
+- name: Source git role .zshrc from main .zshrc
   ansible.builtin.blockinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     block: |
-      # Source custom configuration from ansible-devbox-setup
-      [ -f "{{ playbook_dir }}/dotfile/zsh/.zshrc" ] && source "{{ playbook_dir }}/dotfile/zsh/.zshrc"
+      # Source git configuration from ansible-devbox-setup git role
+      [ -f "{{ ansible_env.HOME }}/.zshrc.git-config" ] && source "{{ ansible_env.HOME }}/.zshrc.git-config"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Devbox configuration"
     create: true
     mode: '0644'
