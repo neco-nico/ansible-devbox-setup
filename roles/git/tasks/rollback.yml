@@ -10,6 +10,13 @@
   when: ansible_os_family == "Darwin"
   failed_when: false
 
+- name: Remove git role .zshrc configuration file
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.zshrc.git-config"
+    state: absent
+  when: ansible_os_family == "Darwin"
+  failed_when: false
+
 - name: Display rollback status
   ansible.builtin.debug:
-    msg: "Git role rollback completed (configuration blocks removed)"
+    msg: "Git role rollback completed (configuration blocks and files removed)"
